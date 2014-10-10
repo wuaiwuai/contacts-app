@@ -22,6 +22,7 @@ Requirements
   - birthday
   - additional notes
 - Search contact list
+- Contact grouping/sorting via tagging/labels
 
 Phase 2 Features
 ----------------
