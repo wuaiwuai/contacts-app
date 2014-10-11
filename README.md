@@ -29,3 +29,13 @@ Phase 2 Features
 
 - Port project over to OSX, iOS, and Android as a native app
 - Sync contacts
+
+To run
+------
+
+- Mongod must be running on port 27017
+- Python 2.7, virtualenv
+- Activate virtualenv:
+    `source virtualenv/bin/activate`
+- Run app on port 5000:
+    `python app.py`
