@@ -8,12 +8,10 @@ contactsServices.factory('AuthService', ['SessionService', '$http',
 
 		// private methods; set and unset sessions
 		var cacheSession = function(user){
-			SessionService.set('authenticated', true);
 			SessionService.set('user', user);
 		}
 
 		var uncacheSession = function(){
-			SessionService.unset('authenticated');
 			SessionService.unset('user');
 		}
 
@@ -33,9 +31,6 @@ contactsServices.factory('AuthService', ['SessionService', '$http',
 				var logout = $http.get('/auth/logout');
 				logout.success(uncacheSession);
 				return logout;
-			},
-			isLoggedIn: function(){
-				return SessionService.get('authenticated');
 			},
 			getCurrentUser: function(){
 				return SessionService.get('user');

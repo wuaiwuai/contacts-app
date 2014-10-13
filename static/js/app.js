@@ -50,7 +50,7 @@ contactsApp.run(['$rootScope', 'AuthService', '$location',
 
 			// if new $location.path() is protected and user is not logged in,
 			// redirect user to login page
-			if(UNPROTECTED_ROUTES.indexOf($location.path()) < 0 && !AuthService.isLoggedIn()){
+			if(UNPROTECTED_ROUTES.indexOf($location.path()) < 0 && !AuthService.getCurrentUser()){
 				$location.path('/login');
 			}
 		})
