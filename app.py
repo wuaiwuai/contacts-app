@@ -25,7 +25,8 @@ def login():
     if user != None and user['password'] == password:
             session['logged_in'] = True
             session['username'] = username
-            return jsonify(user)
+            # return username to be stored in localStorage
+            return jsonify({"user":user['name']})
     else:
         # if credentials don't match, return message with 401 status
         return jsonify(message="Incorrect username or password"), 401

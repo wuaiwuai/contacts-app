@@ -27,20 +27,23 @@ contactsControllers.controller('RegisterCtrl', ['$scope', 'RegisterService', '$l
 		$scope.register = function(){
 			RegisterService.registerUser($scope.credentials).success(function(){
 				$location.path('/login');
-			})
+			});
 		}
 	}
 ]);
 
 contactsControllers.controller('HomeCtrl', ['$scope', 'AuthService', '$location',
 	function($scope, AuthService, $location){
-		$scope.logout = function(){
 
-			// on form submit, call AuthService's logout function
-			// on success redirect to login page
+		// get current user from localStorage
+		$scope.user = AuthService.getCurrentUser();
+
+		// on form submit, call AuthService's logout function
+		// on success redirect to login page
+		$scope.logout = function(){
 			AuthService.logout().success(function(){
 				$location.path('/login');
-			})
+			});
 		}
 	}
 ]);

@@ -7,12 +7,14 @@ contactsServices.factory('AuthService', ['SessionService', '$http',
 	function(SessionService, $http){
 
 		// private methods; set and unset sessions
-		var cacheSession = function(){
+		var cacheSession = function(user){
 			SessionService.set('authenticated', true);
+			SessionService.set('user', user);
 		}
 
 		var uncacheSession = function(){
 			SessionService.unset('authenticated');
+			SessionService.unset('user');
 		}
 
 		// public methods 
@@ -22,7 +24,9 @@ contactsServices.factory('AuthService', ['SessionService', '$http',
 		return {
 			login: function(credentials){
 				var login = $http.post('/auth/login', credentials);
-				login.success(cacheSession);
+				login.success(function(data){
+					cacheSession(data.user);
+				});
 				return login;
 			},
 			logout: function(){
@@ -31,7 +35,10 @@ contactsServices.factory('AuthService', ['SessionService', '$http',
 				return logout;
 			},
 			isLoggedIn: function(){
-				return SessionService.get('authenticated')
+				return SessionService.get('authenticated');
+			},
+			getCurrentUser: function(){
+				return SessionService.get('user');
 			}
 		};
 	}
