@@ -39,3 +39,24 @@ To run
     `source venv/bin/activate`
 - Run app on port 5000:
     `python app.py`
+
+Proposed Schema
+---------------
+
+    {
+    	"name": "",
+    	"password": "",
+    	"contacts":
+    		[
+    			{
+    				"lastName": "",
+    				"firstName": "",
+    				"company": "",
+    				"phone": "",
+    				"address": "",
+    				"birthday": "",
+    				"notes": "",
+    				"tags" : []
+    			}
+    		]
+    }
