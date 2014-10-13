@@ -41,8 +41,8 @@ contactsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 contactsApp.run(['$rootScope', 'AuthService', '$location',
 	function($rootScope, AuthService, $location){
 
-		// PROTECTED_ROUTES is array of all routes requiring authentication
-		var PROTECTED_ROUTES = ['/'];
+		// UNPROTECTED_ROUTES is array of all routes not requiring authentication
+		var UNPROTECTED_ROUTES = ['/login', '/register'];
 
 		// $rootScope listens for $locationChangeStart, an event that is 
 		// broadcast at begining of URL change
@@ -50,7 +50,7 @@ contactsApp.run(['$rootScope', 'AuthService', '$location',
 
 			// if new $location.path() is protected and user is not logged in,
 			// redirect user to login page
-			if(PROTECTED_ROUTES.indexOf($location.path()) > -1 && !AuthService.isLoggedIn()){
+			if(UNPROTECTED_ROUTES.indexOf($location.path()) < 0 && !AuthService.isLoggedIn()){
 				$location.path('/login');
 			}
 		})

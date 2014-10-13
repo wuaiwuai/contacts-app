@@ -41,7 +41,7 @@ def create_user():
     content = request.get_json()
     username = content['username']
     password = content['password']
-
+    # note: rather than make this extra call, set unique index on "name"
     try:
         user = db.users.find_one({"name":username}, {"_id":0})
     except:
@@ -50,9 +50,8 @@ def create_user():
     if user != None:
         return jsonify(message="Username already in use"), 422
     else:
-        new_user = {"name":username, "password":password}
         try:
-            db.users.insert(new_user)
+            db.users.insert({"name":username, "password":password})
         except:
             return jsonify(message="Database connection problem"), 500
 
