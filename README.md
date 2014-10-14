@@ -35,6 +35,8 @@ To run
 
 - Mongod must be running on port 27017
 - Python 2.7, virtualenv, pip
+- Create virtualenv:
+    `virtualenv venv`
 - Activate virtualenv:
     `source venv/bin/activate`
 - Install requirements:
