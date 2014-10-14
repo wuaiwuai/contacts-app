@@ -2,9 +2,41 @@
 
 var contactsServices = angular.module('contactsServices', []);
 
+contactsServices.factory('FlashService', ['$rootScope',
+	function($rootScope){
+		
+		// set message queue and current message; when route
+		// changes complete, current message gets first message
+		// in queue or nothing if there is nothing left
+		var queue = [];
+		var currentMessage = '';
+
+		$rootScope.$on('$locationChangeSuccess', function(){
+			currentMessage = queue.shift() || '';
+		});
+
+		// public methods
+		// Note: because on success we expect route to change
+		// whereas on error we expect route to stay the same,
+		// setMessage will show after one route change and
+		// showMessage will add message immediately
+		return {
+			setMessage: function(message){
+				queue.push(message);
+			},
+			showMessage: function(message){
+				currentMessage = message;
+			},
+			getMessage: function(){
+				return currentMessage;
+			}
+		};
+	}
+]);
+
 // AuthService handles login/logout by calling SessionService
-contactsServices.factory('AuthService', ['SessionService', '$http',
-	function(SessionService, $http){
+contactsServices.factory('AuthService', ['SessionService', '$http', 'FlashService',
+	function(SessionService, $http, FlashService){
 
 		// private methods; set and unset sessions
 		var cacheSession = function(user){
@@ -25,11 +57,17 @@ contactsServices.factory('AuthService', ['SessionService', '$http',
 				login.success(function(data){
 					cacheSession(data.user);
 				});
+				login.error(function(data){
+					FlashService.showMessage(data.message);
+				})
 				return login;
 			},
 			logout: function(){
 				var logout = $http.get('/auth/logout');
-				logout.success(uncacheSession);
+				logout.success(function(data){
+					uncacheSession();
+					FlashService.setMessage(data.message);
+				});
 				return logout;
 			},
 			getCurrentUser: function(){
@@ -39,11 +77,17 @@ contactsServices.factory('AuthService', ['SessionService', '$http',
 	}
 ]);
 
-contactsServices.factory('RegisterService', ['$http',
-	function($http){
+contactsServices.factory('RegisterService', ['$http', 'FlashService',
+	function($http, FlashService){
 		return {
 			registerUser: function(credentials){
 				var register = $http.post('/api/users', credentials);
+				register.success(function(data){
+					FlashService.setMessage(data.message);
+				});
+				register.error(function(data){
+					FlashService.showMessage(data.message);
+				});
 				return register;
 			}
 		};

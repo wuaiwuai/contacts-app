@@ -38,8 +38,11 @@ contactsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 
 // appwide concerns can be places on $rootScope where
 // they will be accessible to all child scopes
-contactsApp.run(['$rootScope', 'AuthService', '$location',
-	function($rootScope, AuthService, $location){
+contactsApp.run(['$rootScope', 'AuthService', '$location', 'FlashService',
+	function($rootScope, AuthService, $location, FlashService){
+
+		// Add FlashService to $rootScope to avoid injecting it in every controller
+		$rootScope.flash = FlashService;
 
 		// UNPROTECTED_ROUTES is array of all routes not requiring authentication
 		var UNPROTECTED_ROUTES = ['/login', '/register'];
