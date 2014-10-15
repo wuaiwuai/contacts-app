@@ -26,7 +26,7 @@ def login():
             session['logged_in'] = True
             session['username'] = username
             # return username to be stored in localStorage
-            return jsonify({"user":user['name']})
+            return jsonify({"user":user['name'], "contacts":user['contacts']})
     else:
         # if credentials don't match, return message with 401 status
         return jsonify(message="Incorrect username or password"), 401
@@ -42,21 +42,31 @@ def create_user():
     content = request.get_json()
     username = content['username']
     password = content['password']
-    # note: rather than make this extra call, set unique index on "name"
+    # note: for this to work there must be a unique index on "name"
+    # run `db.users.ensureIndex({name: 1}, {unique: true})` in mongo
+    try:
+        db.users.insert({"name":username, "password":password})
+    except pymongo.errors.DuplicateKeyError:
+        return jsonify(message="Username already in use"), 422
+    except:
+        return jsonify(message="Database connection problem"), 500
+
+    return jsonify(message="You have successfully registered"), 201
+
+@app.route('/api/users/<username>/contacts', methods=['GET'])
+def get_user_contacts(username):
+    if (not session.get('logged_in') or
+        not username == session.get('username')):
+        abort(401)
     try:
         user = db.users.find_one({"name":username}, {"_id":0})
     except:
         return jsonify(message="Database connection problem"), 500
 
     if user != None:
-        return jsonify(message="Username already in use"), 422
+        return jsonify({"contacts":user['contacts']})
     else:
-        try:
-            db.users.insert({"name":username, "password":password})
-        except:
-            return jsonify(message="Database connection problem"), 500
-
-        return jsonify(message="You have successfully registered"), 201
+        return jsonify(message="User not found")
 
 # serve the Angular app
 # every route to be handled by Angular needs to be added here 

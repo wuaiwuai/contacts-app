@@ -2,9 +2,10 @@
 
 var contactsServices = angular.module('contactsServices', []);
 
+// FlashService emulates server side flash messaging
 contactsServices.factory('FlashService', ['$rootScope',
 	function($rootScope){
-		
+
 		// set message queue and current message; when route
 		// changes complete, current message gets first message
 		// in queue or nothing if there is nothing left
@@ -35,8 +36,8 @@ contactsServices.factory('FlashService', ['$rootScope',
 ]);
 
 // AuthService handles login/logout by calling SessionService
-contactsServices.factory('AuthService', ['SessionService', '$http', 'FlashService',
-	function(SessionService, $http, FlashService){
+contactsServices.factory('AuthService', ['SessionService', '$http', 'FlashService', 'CacheService',
+	function(SessionService, $http, FlashService, CacheService){
 
 		// private methods; set and unset sessions
 		var cacheSession = function(user){
@@ -51,11 +52,13 @@ contactsServices.factory('AuthService', ['SessionService', '$http', 'FlashServic
 		// use xhr to authenticate against db and store
 		// server side sessions, and return promises that 
 		// can be used in controllers for redirects, etc
+		// login stores contacts data with CacheService
 		return {
 			login: function(credentials){
 				var login = $http.post('/auth/login', credentials);
 				login.success(function(data){
 					cacheSession(data.user);
+					CacheService.put('contacts', data.contacts);
 				});
 				login.error(function(data){
 					FlashService.showMessage(data.message);
@@ -77,6 +80,41 @@ contactsServices.factory('AuthService', ['SessionService', '$http', 'FlashServic
 	}
 ]);
 
+// DataService provides methods for CRUD operations
+contactsServices.factory('DataService', ['$http', 'CacheService', '$q',
+	function($http, CacheService, $q){
+
+		// public methods
+		// getContacts will first check cache to see if there is
+		// contacts data; if there is it returns promise with q
+		// otherwise (as in page refresh) it calls server with 
+		// username from controller, cleans up response so 
+		// contacts is already an array and hands promise back
+		return {
+			getContacts: function(user){
+				if(CacheService.get('contacts')){
+					return $q.when(CacheService.get('contacts'));
+				}
+				else{
+					var contacts = $http.get('/api/users/' + user + '/contacts', {cache: CacheService})
+						.then(function(response){
+							return response.data.contacts;
+						});
+					return contacts;
+				}
+			}
+		};
+	}
+]);
+
+// CacheService is the custom cache where contacts will be stored
+contactsServices.factory('CacheService', ['$cacheFactory',
+	function($cacheFactory){
+		return $cacheFactory('customData');
+	}
+]);
+
+// RegisterService posts to create user
 contactsServices.factory('RegisterService', ['$http', 'FlashService',
 	function($http, FlashService){
 		return {
