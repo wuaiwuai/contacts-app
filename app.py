@@ -53,6 +53,7 @@ def create_user():
 
     return jsonify(message="You have successfully registered"), 201
 
+# get contacts by user
 @app.route('/api/users/<username>/contacts', methods=['GET'])
 def get_user_contacts(username):
     if (not session.get('logged_in') or
@@ -68,12 +69,29 @@ def get_user_contacts(username):
     else:
         return jsonify(message="User not found")
 
+# create new contact
+@app.route('/api/users/<username>/contacts', methods=['POST'])
+def create_contact(username):
+    if (not session.get('logged_in') or
+        not username == session.get('username')):
+        abort(401)
+
+    content = request.get_json()
+
+    try:
+        db.users.update({"name":username},{'$push':{'contacts': content}})
+    except:
+        return jsonify(message="Database connection problem"), 500
+
+    return jsonify(message="Contact has been successfully added"), 201
+
 # serve the Angular app
 # every route to be handled by Angular needs to be added here 
 # or else Flask will throw 404 if that route hits the server
 @app.route('/')
 @app.route('/login')
 @app.route('/register')
+@app.route('/add')
 def index():
     return render_template('index.html')
 

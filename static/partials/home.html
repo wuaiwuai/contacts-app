@@ -7,7 +7,7 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="#">Project name</a>
+					<a class="navbar-brand" href="#">Coolest Contacts App</a>
 				</div>
 				<div class="navbar-collapse collapse">
 					<ul class="nav navbar-nav navbar-right">
@@ -48,7 +48,9 @@
 				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 					<h1 class="page-header">Hello {{user}}</h1>
 
-					<h2 class="sub-header">Section title</h2>
+					<div class="alert alert-info" role="alert" ng-show="flash.getMessage()">
+						<p>{{flash.getMessage()}}</p>
+					</div>
 					<div class="table-responsive">
 						<table class="table table-striped">
 							<thead>
@@ -57,6 +59,7 @@
 									<th>Company</th>
 									<th>Phone</th>
 									<th>Address</th>
+									<th>Birthday</th>
 									<th>Notes</th>
 								</tr>
 							</thead>
@@ -66,11 +69,64 @@
 									<td>{{contact.company}}</td>
 									<td>{{contact.phone}}</td>
 									<td>{{contact.address}}</td>
+									<td>{{contact.birthday}}</td>
 									<td>{{contact.notes}}</td>
 									<td><a href>Edit</a></td>
 								</tr>
 							</tbody>
 						</table>
+					</div>
+					<a ng-if="!$state.includes('home.add')" href="/add" class="btn btn-primary">Add</a>
+					<div ng-if="$state.includes('home.add')">
+						<form ng-submit="addContact()">
+							<div class="row">
+								<label class="col-sm-2 control-label">First name:</label>
+								<div class="col-sm-3">
+									<input ng-model="newContact.firstName" type="text" class="form-control" placeholder="">
+								</div>
+								<label class="col-sm-2 control-label">Last name:</label>
+								<div class="col-sm-3">
+									<input ng-model="newContact.lastName" type="text" class="form-control" placeholder="">
+								</div>
+							</div>
+							<div class="row">
+								<label class="col-sm-2 control-label">Company:</label>
+								<div class="col-sm-3">
+									<input ng-model="newContact.company" type="text" class="form-control" placeholder="">
+								</div>
+								<label class="col-sm-2 control-label">Phone:</label>
+								<div class="col-sm-3">
+									<input ng-model="newContact.phone" type="text" class="form-control" placeholder="">
+								</div>
+							</div>
+							<div class="row">
+								<label class="col-sm-2 control-label">Address:</label>
+								<div class="col-sm-3">
+									<input ng-model="newContact.address" type="text" class="form-control" placeholder="">
+								</div>
+								<label class="col-sm-2 control-label">Birthday:</label>
+								<div class="col-sm-3">
+									<input ng-model="newContact.birthday" type="text" class="form-control" placeholder="">
+								</div>
+							</div>
+							<div class="row">
+								<label ng-model="newContact.email" class="col-sm-2 control-label">Email:</label>
+								<div class="col-sm-3">
+									<input type="text" class="form-control" placeholder="">
+								</div>
+								<label class="col-sm-2 control-label">Notes:</label>
+								<div class="col-sm-3">
+									<input ng-model="newContact.notes" type="text" class="form-control" placeholder="">
+								</div>
+							</div>
+							<hr />
+							<div class="row">
+								<div class="col-md-3 col-md-offset-7">
+									<button class="btn btn-primary" type="submit">Add Contact</button>
+									<a href="/" class="btn btn-danger">Cancel</a>
+								</div>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>

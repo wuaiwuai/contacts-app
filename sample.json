@@ -40,3 +40,13 @@
 		}
 	]
 }
+
+db.users.update({"name":"admin"}, 
+	{$push: {"contacts": 
+	{ "lastName":"Tucker",
+	"firstName":"Chris",
+	"company":"LAPD",
+	"phone":"703.987.1594",
+	"birthday":"4/24/1976",
+	"notes": "Met this guy through Jackie Chan",
+	"tags":["actors","acquaintences"] } } })

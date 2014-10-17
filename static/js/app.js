@@ -30,16 +30,24 @@ contactsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 				url: '/',
 				templateUrl: DIR + '/home.html',
 				controller: 'HomeCtrl'
+			})
+			.state('home.add',{
+				url: 'add',
+				templateUrl: DIR + '/home.html',
+				controller: 'HomeCtrl'
 			});
 		// for now redirect all requests to login
 		$urlRouterProvider.otherwise('login')
 	}
 ]);
 
-// appwide concerns can be places on $rootScope where
+// appwide concerns can be placed on $rootScope where
 // they will be accessible to all child scopes
-contactsApp.run(['$rootScope', 'AuthService', '$location', 'FlashService',
-	function($rootScope, AuthService, $location, FlashService){
+contactsApp.run(['$rootScope', 'AuthService', '$location', 'FlashService', '$state',
+	function($rootScope, AuthService, $location, FlashService, $state){
+
+		// Add $state to $rootScope so it will be accessible everywhere
+		$rootScope.$state = $state;
 
 		// Add FlashService to $rootScope to avoid injecting it in every controller
 		$rootScope.flash = FlashService;

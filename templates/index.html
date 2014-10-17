@@ -5,8 +5,8 @@
 	<title>Contacts app</title>
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendor/bootstrap/dist/css/bootstrap.min.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dashboard.css') }}">
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>
+	<script src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='vendor/angular/angular.min.js') }}"></script>
 	<script src="{{ url_for('static', filename='vendor/angular-ui-router/release/angular-ui-router.min.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/controllers.js') }}"></script>

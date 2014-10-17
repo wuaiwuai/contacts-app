@@ -81,9 +81,17 @@ contactsServices.factory('AuthService', ['SessionService', '$http', 'FlashServic
 ]);
 
 // DataService provides methods for CRUD operations
-contactsServices.factory('DataService', ['$http', 'CacheService', '$q',
-	function($http, CacheService, $q){
+contactsServices.factory('DataService', ['$http', 'CacheService', '$q', 'AuthService', 'FlashService',
+	function($http, CacheService, $q, AuthService, FlashService){
 
+		// private properties/methods
+		var user = AuthService.getCurrentUser()
+		// updates cache to reflect newly added contact without calling db again for fresh data
+		var updateCachedContacts = function(newContact){
+			var cachedContacts = CacheService.get('contacts');
+			cachedContacts.push(newContact);
+			CacheService.put('contacts', cachedContacts);
+		}
 		// public methods
 		// getContacts will first check cache to see if there is
 		// contacts data; if there is it returns promise with q
@@ -91,17 +99,29 @@ contactsServices.factory('DataService', ['$http', 'CacheService', '$q',
 		// username from controller, cleans up response so 
 		// contacts is already an array and hands promise back
 		return {
-			getContacts: function(user){
+			getContacts: function(){
 				if(CacheService.get('contacts')){
 					return $q.when(CacheService.get('contacts'));
 				}
 				else{
-					var contacts = $http.get('/api/users/' + user + '/contacts', {cache: CacheService})
+					var contacts = $http.get('/api/users/' + user + '/contacts')
 						.then(function(response){
+							CacheService.put('contacts', response.data.contacts);
 							return response.data.contacts;
 						});
 					return contacts;
 				}
+			},
+			addContact: function(newContact){
+				var contact = $http.post('/api/users/' + user + '/contacts', newContact);
+				contact.success(function(data){
+					updateCachedContacts(newContact);
+					FlashService.setMessage(data.message);
+				});
+				contact.error(function(data){
+					FlashService.showMessage(data.message);
+				})
+				return contact;
 			}
 		};
 	}
