@@ -36,5 +36,3 @@ def insert_test():
     except:
         print "Unexpected server error"
         print "Unexpected error:", sys.exc_info()[0]
-
-insert_test()
