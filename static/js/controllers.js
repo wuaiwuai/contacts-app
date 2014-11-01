@@ -32,11 +32,26 @@ contactsControllers.controller('RegisterCtrl', ['$scope', 'RegisterService', '$l
 	}
 ]);
 
-contactsControllers.controller('HomeCtrl', ['$scope', 'AuthService', '$location',
-	function($scope, AuthService, $location){
+contactsControllers.controller('HomeCtrl', ['$scope', 'AuthService', '$location', 'DataService',
+	function($scope, AuthService, $location, DataService){
+
+		// initialize new contact object
+		$scope.newContact = {};
 
 		// get current user from localStorage
 		$scope.user = AuthService.getCurrentUser();
+
+		// get contacts
+		DataService.getContacts().then(function(contacts){
+			$scope.contacts = contacts;
+		});
+
+		// add contact
+		$scope.addContact = function(){
+			DataService.addContact($scope.newContact).success(function(){
+				$location.path('/');
+			})
+		}
 
 		// on form submit, call AuthService's logout function
 		// on success redirect to login page

@@ -1,0 +1,52 @@
+{
+	"name": "admin",
+	"password":"default",
+	"contacts": [
+		{
+			"lastName":"Dang",
+			"firstName":"Jon",
+			"company":"Gannett",
+			"phone": "555.555.5555",
+			"address": "123 Fake St",
+			"birthday": "9/11/1987",
+			"notes": "CSS Ninja",
+			"tags": [
+				"friends",
+				"well-wishers"
+				]
+		},
+		{
+			"lastName":"Sanchez",
+			"firstName":"Paolo",
+			"company":"Gumby Project",
+			"phone": "555.555.5555",
+			"address": "456 Fake St",
+			"birthday": "11/18/1986",
+			"notes": "",
+			"tags": [
+				"friends"
+				]
+		},
+		{
+			"lastName":"Chavez",
+			"firstName":"Paulo",
+			"company":"Bizarro World",
+			"phone": "555.555.5555",
+			"address": "",
+			"notes": "Paolo Sanchez's doppelganger, might one day be useful",
+			"tags": [
+				"acquaintences"
+				]
+		}
+	]
+}
+
+db.users.update({"name":"admin"}, 
+	{$push: {"contacts": 
+	{ "lastName":"Tucker",
+	"firstName":"Chris",
+	"company":"LAPD",
+	"phone":"703.987.1594",
+	"birthday":"4/24/1976",
+	"notes": "Met this guy through Jackie Chan",
+	"tags":["actors","acquaintences"] } } })
