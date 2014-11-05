@@ -8,7 +8,7 @@ var contactsApp = angular.module('contactsApp', [
 ]);
 
 // partial templates path relative to app.py
-var DIR = 'static/partials';
+var DIR = '/static/partials';
 
 contactsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 	function($stateProvider, $urlRouterProvider, $locationProvider){
@@ -33,7 +33,12 @@ contactsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 			})
 			.state('home.add',{
 				url: 'add',
-				templateUrl: DIR + '/home.html',
+				templateUrl: DIR + '/home.add.html',
+				controller: 'HomeCtrl'
+			})
+			.state('home.contact', {
+				url: 'contact/:contact',
+				templateUrl: DIR + '/home.contact.html',
 				controller: 'HomeCtrl'
 			});
 		// for now redirect all requests to login

@@ -45,7 +45,7 @@ def create_user():
     # note: for this to work there must be a unique index on "name"
     # run `db.users.ensureIndex({name: 1}, {unique: true})` in mongo
     try:
-        db.users.insert({"name":username, "password":password})
+        db.users.insert({"name":username, "password":password, "contacts":[]})
     except pymongo.errors.DuplicateKeyError:
         return jsonify(message="Username already in use"), 422
     except:
@@ -93,6 +93,10 @@ def create_contact(username):
 @app.route('/register')
 @app.route('/add')
 def index():
+    return render_template('index.html')
+
+@app.route('/contact/<contact>')
+def contact(contact):
     return render_template('index.html')
 
 # connect to database 'test' and assign handle 'db'

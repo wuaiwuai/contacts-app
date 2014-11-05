@@ -1,0 +1,51 @@
+<div>
+	<form ng-submit="addContact()">
+		<div class="row">
+			<label class="col-lg-2 control-label">First name:</label>
+			<div class="col-lg-3">
+				<input ng-model="newContact.firstName" type="text" class="form-control" placeholder="">
+			</div>
+			<label class="col-lg-2 control-label">Last name:</label>
+			<div class="col-lg-3">
+				<input ng-model="newContact.lastName" type="text" class="form-control" placeholder="">
+			</div>
+		</div>
+		<div class="row">
+			<label class="col-lg-2 control-label">Company:</label>
+			<div class="col-lg-3">
+				<input ng-model="newContact.company" type="text" class="form-control" placeholder="">
+			</div>
+			<label class="col-lg-2 control-label">Phone:</label>
+			<div class="col-lg-3">
+				<input ng-model="newContact.phone" type="text" class="form-control" placeholder="">
+			</div>
+		</div>
+		<div class="row">
+			<label class="col-lg-2 control-label">Address:</label>
+			<div class="col-lg-3">
+				<input ng-model="newContact.address" type="text" class="form-control" placeholder="">
+			</div>
+			<label class="col-lg-2 control-label">Birthday:</label>
+			<div class="col-lg-3">
+				<input ng-model="newContact.birthday" type="text" class="form-control" placeholder="">
+			</div>
+		</div>
+		<div class="row">
+			<label ng-model="newContact.email" class="col-lg-2 control-label">Email:</label>
+			<div class="col-lg-3">
+				<input type="text" class="form-control" placeholder="">
+			</div>
+			<label class="col-lg-2 control-label">Notes:</label>
+			<div class="col-lg-3">
+				<input ng-model="newContact.notes" type="text" class="form-control" placeholder="">
+			</div>
+		</div>
+		<hr />
+		<div class="row">
+			<div class="col-lg-3 col-lg-offset-7">
+				<button class="btn btn-primary" type="submit">Add Contact</button>
+				<a href="/" class="btn btn-danger">Cancel</a>
+			</div>
+		</div>
+	</form>
+</div>
