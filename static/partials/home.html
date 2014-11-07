@@ -29,7 +29,7 @@
 				<!-- Column 1 -->
 				<div class="col-lg-2 sidebar">
 					<ul class="nav nav-sidebar">
-						<li class="active"><a ng-if="!$state.includes('home.add')" href="/add" class="btn btn-primary">Add</a></li>
+						<li class="active"><a ng-if="!$state.includes('home.add')" href="/add" class="btn btn-primary">Add Contact</a></li>
 						<li><a href="#">Reports</a></li>
 						<li><a href="#">Analytics</a></li>
 						<li><a href="#">Export</a></li>
@@ -53,6 +53,11 @@
 					<div class="row">
 						<div class="col-lg-10">
 							<h1 class="page-header">Hello {{user}}</h1>
+						</div>
+
+						<!-- Flash message -->
+						<div class="alert alert-info" role="alert" ng-show="flash.getMessage()">
+							<p>{{flash.getMessage()}}</p>
 						</div>
 					</div>
 
@@ -80,13 +85,15 @@
 						<!-- Column 3 -->
 						<div class="col-lg-6 main">
 
-							<!-- Flash message -->
-							<div class="alert alert-info" role="alert" ng-show="flash.getMessage()">
-								<p>{{flash.getMessage()}}</p>
-							</div>
-
 							<!-- Nested view -->
-							<div ui-view></div>
+							<div ui-view>
+								<h2>Getting started</h2>
+								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum dolores reprehenderit cupiditate ea dolore distinctio doloremque voluptatum consectetur, sed modi similique fugiat iusto enim dicta error aliquam repellendus alias. Maxime.</p>
+								<p>Id dicta magnam praesentium obcaecati sint fugiat dolores, nam vitae laborum? Libero magni quidem quia accusantium ut repellendus saepe! Doloremque voluptates nobis nulla quod ab, molestias modi eum saepe sunt.</p>
+								<p>Esse maxime neque soluta accusantium corrupti possimus incidunt modi eveniet quod corporis. Necessitatibus doloremque laboriosam aliquam. Quae architecto ipsam autem. Illo commodi praesentium labore totam aliquid voluptate dignissimos, ratione blanditiis.</p>
+								<p>Iste explicabo odio ullam iusto consectetur sint commodi laboriosam sapiente, voluptatibus, perferendis saepe eius quis maiores eligendi magni expedita. Dolorem alias iure modi praesentium, laborum distinctio dignissimos harum non. Nisi.</p>
+								<p>Aliquid dolores dicta iure laborum repellat sed officiis accusantium consequatur rerum impedit doloremque, blanditiis maxime, asperiores doloribus, molestias totam ab adipisci similique tenetur eum error odit perspiciatis assumenda! Harum, repudiandae.</p>
+							</div>
 
 						</div>
 					</div>
