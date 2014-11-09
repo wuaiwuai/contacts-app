@@ -88,13 +88,10 @@ def create_contact(username):
 # serve the Angular app
 # every route to be handled by Angular needs to be added here 
 # or else Flask will throw 404 if that route hits the server
-@app.route('/')
+@app.route('/', defaults = {'contact': ''})
 @app.route('/login')
 @app.route('/register')
 @app.route('/add')
-def index():
-    return render_template('index.html')
-
 @app.route('/contact/<contact>')
 def contact(contact):
     return render_template('index.html')
