@@ -26,7 +26,8 @@ def login():
             session['logged_in'] = True
             session['username'] = username
             # return username to be stored in localStorage
-            return jsonify({"user":user['name'], "contacts":user['contacts']})
+            return jsonify({"user":user['name'], "contacts":user['contacts'],
+                "tags":user['tags']})
     else:
         # if credentials don't match, return message with 401 status
         return jsonify(message="Incorrect username or password"), 401
@@ -45,7 +46,8 @@ def create_user():
     # note: for this to work there must be a unique index on "name"
     # run `db.users.ensureIndex({name: 1}, {unique: true})` in mongo
     try:
-        db.users.insert({"name":username, "password":password, "contacts":[]})
+        db.users.insert({"name":username, "password":password, "contacts":[],
+            "tags":[]})
     except pymongo.errors.DuplicateKeyError:
         return jsonify(message="Username already in use"), 422
     except:
@@ -75,11 +77,43 @@ def create_contact(username):
     if (not session.get('logged_in') or
         not username == session.get('username')):
         abort(401)
-
+    # get post request content (new contact object)
     content = request.get_json()
-
+    # push to contacts array
     try:
         db.users.update({"name":username},{'$push':{'contacts': content}})
+    except:
+        return jsonify(message="Database connection problem"), 500
+
+    return jsonify(message="Contact has been successfully added"), 201
+
+# get tags by user
+@app.route('/api/users/<username>/tags', methods=['GET'])
+def get_user_tags(username):
+    if (not session.get('logged_in') or
+        not username == session.get('username')):
+        abort(401)
+    try:
+        user = db.users.find_one({"name":username}, {"_id":0})
+    except:
+        return jsonify(message="Database connection problem"), 500
+
+    if user != None:
+        return jsonify({"tags":user['tags']})
+    else:
+        return jsonify(message="User not found")
+
+# create new tag
+@app.route('/api/users/<username>/tags', methods=['POST'])
+def create_tag(username):
+    if (not session.get('logged_in') or
+        not username == session.get('username')):
+        abort(401)
+    # get post request content
+    content = request.get_json()
+    # push to tags array
+    try:
+        db.users.update({"name":username},{'$push':{'tags': content}})
     except:
         return jsonify(message="Database connection problem"), 500
 

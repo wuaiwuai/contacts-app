@@ -59,6 +59,7 @@ contactsServices.factory('AuthService', ['SessionService', '$http', 'FlashServic
 				login.success(function(data){
 					cacheSession(data.user);
 					CacheService.put('contacts', data.contacts);
+					CacheService.put('tags', data.tags);
 				});
 				login.error(function(data){
 					FlashService.showMessage(data.message);
@@ -92,6 +93,12 @@ contactsServices.factory('DataService', ['$http', 'CacheService', '$q', 'AuthSer
 			cachedContacts.push(newContact);
 			CacheService.put('contacts', cachedContacts);
 		}
+		// updates cache to reflect newly added tag without calling db again for fresh data
+		var updateCachedTags = function(newTag){
+			var cachedContacts = CacheService.get('tags');
+			cachedContacts.push(newTag);
+			CacheService.put('tags', cachedTags);
+		}
 		// public methods
 		// getContacts will first check cache to see if there is
 		// contacts data; if there is it returns promise with q
@@ -122,6 +129,30 @@ contactsServices.factory('DataService', ['$http', 'CacheService', '$q', 'AuthSer
 					FlashService.showMessage(data.message);
 				})
 				return contact;
+			},
+			getTags: function(){
+				if(CacheService.get('tags')){
+					return $q.when(CacheService.get('tags'));
+				}
+				else{
+					var tags = $http.get('/api/users/' + user + '/tags')
+						.then(function(response){
+							CacheService.put('contacts', response.data.tags);
+							return response.data.tags;
+						});
+					return tags;
+				}
+			},
+			addTag: function(newTag){
+				var tag = $http.post('/api/users/' + user + '/tags', newTag);
+				tag.success(function(data){
+					updateCachedTags(newTag);
+					FlashService.setMessage(data.message);
+				});
+				contact.error(function(data){
+					FlashService.showMessage(data.message);
+				})
+				return tag;
 			}
 		};
 	}

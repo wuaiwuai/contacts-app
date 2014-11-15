@@ -53,6 +53,11 @@ contactsControllers.controller('HomeCtrl', ['$scope', 'AuthService', '$location'
 			};
 		});
 
+		// get tags
+		DataService.getTags().then(function(tags){
+			$scope.tags = tags;
+		});
+
 		// add contact
 		$scope.addContact = function(){
 			DataService.addContact($scope.newContact).success(function(){
