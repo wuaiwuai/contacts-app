@@ -32,8 +32,8 @@ contactsControllers.controller('RegisterCtrl', ['$scope', 'RegisterService', '$l
 	}
 ]);
 
-contactsControllers.controller('HomeCtrl', ['$scope', 'AuthService', '$location', 'DataService',
-	function($scope, AuthService, $location, DataService){
+contactsControllers.controller('HomeCtrl', ['$scope', 'AuthService', '$location', 'DataService', '$stateParams',
+	function($scope, AuthService, $location, DataService, $stateParams){
 
 		// initialize new contact object
 		$scope.newContact = {};
@@ -44,13 +44,20 @@ contactsControllers.controller('HomeCtrl', ['$scope', 'AuthService', '$location'
 		// get contacts
 		DataService.getContacts().then(function(contacts){
 			$scope.contacts = contacts;
+
+			for (var i = 0, j = contacts.length; i < j; i++){
+				if(contacts[i]['firstName'] + '-' + contacts[i]['lastName'] == $stateParams.contact){
+					$scope.contact = contacts[i];
+					break;
+				}
+			};
 		});
 
 		// add contact
 		$scope.addContact = function(){
 			DataService.addContact($scope.newContact).success(function(){
 				$location.path('/');
-			})
+			});
 		}
 
 		// on form submit, call AuthService's logout function

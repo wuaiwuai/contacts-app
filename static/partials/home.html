@@ -25,9 +25,11 @@
 
 		<div class="container-fluid">
 			<div class="row">
-				<div class="col-sm-3 col-md-2 sidebar">
+
+				<!-- Column 1 -->
+				<div class="col-lg-2 sidebar">
 					<ul class="nav nav-sidebar">
-						<li class="active"><a href="#">Overview</a></li>
+						<li class="active"><a ng-if="!$state.includes('home.add')" href="/add" class="btn btn-primary">Add Contact</a></li>
 						<li><a href="#">Reports</a></li>
 						<li><a href="#">Analytics</a></li>
 						<li><a href="#">Export</a></li>
@@ -45,88 +47,55 @@
 						<li><a href="">Another nav item</a></li>
 					</ul>
 				</div>
-				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-					<h1 class="page-header">Hello {{user}}</h1>
+				
+				<!-- Column 2-3 -->
+				<div class="col-lg-10 col-lg-offset-2">
+					<div class="row">
+						<div class="col-lg-10">
+							<h1 class="page-header">Hello {{user}}</h1>
+						</div>
 
-					<div class="alert alert-info" role="alert" ng-show="flash.getMessage()">
-						<p>{{flash.getMessage()}}</p>
+						<!-- Flash message -->
+						<div class="alert alert-info" role="alert" ng-show="flash.getMessage()">
+							<p>{{flash.getMessage()}}</p>
+						</div>
 					</div>
-					<div class="table-responsive">
-						<table class="table table-striped">
-							<thead>
-								<tr>
-									<th>Contact</th>
-									<th>Company</th>
-									<th>Phone</th>
-									<th>Address</th>
-									<th>Birthday</th>
-									<th>Notes</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr ng-repeat="contact in contacts | orderBy:'lastName'">
-									<td>{{contact.firstName}} {{contact.lastName}}</td>
-									<td>{{contact.company}}</td>
-									<td>{{contact.phone}}</td>
-									<td>{{contact.address}}</td>
-									<td>{{contact.birthday}}</td>
-									<td>{{contact.notes}}</td>
-									<td><a href>Edit</a></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					<a ng-if="!$state.includes('home.add')" href="/add" class="btn btn-primary">Add</a>
-					<div ng-if="$state.includes('home.add')">
-						<form ng-submit="addContact()">
-							<div class="row">
-								<label class="col-sm-2 control-label">First name:</label>
-								<div class="col-sm-3">
-									<input ng-model="newContact.firstName" type="text" class="form-control" placeholder="">
-								</div>
-								<label class="col-sm-2 control-label">Last name:</label>
-								<div class="col-sm-3">
-									<input ng-model="newContact.lastName" type="text" class="form-control" placeholder="">
-								</div>
+
+					<!-- Column 2 -->
+					<div class="row">
+						<div class="col-lg-4 main">
+							<div class="table-responsive">
+								<table class="table table-striped">
+									<thead>
+										<tr>
+											<th>Contact</th>
+											<th>Company</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="contact in contacts | orderBy:'lastName'">
+											<td><a href="/contact/{{contact.firstName}}-{{contact.lastName}}">{{contact.firstName}} {{contact.lastName}}</a></td>
+											<td>{{contact.company}}</td>
+										</tr>
+									</tbody>
+								</table>
 							</div>
-							<div class="row">
-								<label class="col-sm-2 control-label">Company:</label>
-								<div class="col-sm-3">
-									<input ng-model="newContact.company" type="text" class="form-control" placeholder="">
-								</div>
-								<label class="col-sm-2 control-label">Phone:</label>
-								<div class="col-sm-3">
-									<input ng-model="newContact.phone" type="text" class="form-control" placeholder="">
-								</div>
+						</div>
+
+						<!-- Column 3 -->
+						<div class="col-lg-6 main">
+
+							<!-- Nested view -->
+							<div ui-view>
+								<h2>Getting started</h2>
+								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum dolores reprehenderit cupiditate ea dolore distinctio doloremque voluptatum consectetur, sed modi similique fugiat iusto enim dicta error aliquam repellendus alias. Maxime.</p>
+								<p>Id dicta magnam praesentium obcaecati sint fugiat dolores, nam vitae laborum? Libero magni quidem quia accusantium ut repellendus saepe! Doloremque voluptates nobis nulla quod ab, molestias modi eum saepe sunt.</p>
+								<p>Esse maxime neque soluta accusantium corrupti possimus incidunt modi eveniet quod corporis. Necessitatibus doloremque laboriosam aliquam. Quae architecto ipsam autem. Illo commodi praesentium labore totam aliquid voluptate dignissimos, ratione blanditiis.</p>
+								<p>Iste explicabo odio ullam iusto consectetur sint commodi laboriosam sapiente, voluptatibus, perferendis saepe eius quis maiores eligendi magni expedita. Dolorem alias iure modi praesentium, laborum distinctio dignissimos harum non. Nisi.</p>
+								<p>Aliquid dolores dicta iure laborum repellat sed officiis accusantium consequatur rerum impedit doloremque, blanditiis maxime, asperiores doloribus, molestias totam ab adipisci similique tenetur eum error odit perspiciatis assumenda! Harum, repudiandae.</p>
 							</div>
-							<div class="row">
-								<label class="col-sm-2 control-label">Address:</label>
-								<div class="col-sm-3">
-									<input ng-model="newContact.address" type="text" class="form-control" placeholder="">
-								</div>
-								<label class="col-sm-2 control-label">Birthday:</label>
-								<div class="col-sm-3">
-									<input ng-model="newContact.birthday" type="text" class="form-control" placeholder="">
-								</div>
-							</div>
-							<div class="row">
-								<label ng-model="newContact.email" class="col-sm-2 control-label">Email:</label>
-								<div class="col-sm-3">
-									<input type="text" class="form-control" placeholder="">
-								</div>
-								<label class="col-sm-2 control-label">Notes:</label>
-								<div class="col-sm-3">
-									<input ng-model="newContact.notes" type="text" class="form-control" placeholder="">
-								</div>
-							</div>
-							<hr />
-							<div class="row">
-								<div class="col-md-3 col-md-offset-7">
-									<button class="btn btn-primary" type="submit">Add Contact</button>
-									<a href="/" class="btn btn-danger">Cancel</a>
-								</div>
-							</div>
-						</form>
+
+						</div>
 					</div>
 				</div>
 			</div>
