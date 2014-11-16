@@ -36,6 +36,8 @@ To run
 - Mongod must be running on port 27017
 - To get sample data, run:
     `mongorestore dump`
+- Open mongo shell (`mongo`) and add unique index:
+    `db.users.ensureIndex({name: 1}, {unique: true})`
 - Python 2.7, virtualenv, pip
 - Create virtualenv:
     `virtualenv venv`
