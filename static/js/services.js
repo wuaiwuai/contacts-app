@@ -99,6 +99,7 @@ contactsServices.factory('DataService', ['$http', 'CacheService', '$q', 'AuthSer
 			cachedContacts.push(newTag);
 			CacheService.put('tags', cachedTags);
 		}
+		
 		// public methods
 		// getContacts will first check cache to see if there is
 		// contacts data; if there is it returns promise with q
