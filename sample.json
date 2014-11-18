@@ -41,6 +41,7 @@
 	]
 }
 
+// add contact example
 db.users.update({"name":"admin"}, 
 	{$push: {"contacts": 
 	{ "lastName":"Tucker",
@@ -50,3 +51,6 @@ db.users.update({"name":"admin"},
 	"birthday":"4/24/1976",
 	"notes": "Met this guy through Jackie Chan",
 	"tags":["actors","acquaintences"] } } })
+
+// update contact example
+db.users.update({"name":"admin"}, {$set: {"contacts.7.address": "Westeros"}})

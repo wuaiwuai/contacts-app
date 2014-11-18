@@ -67,7 +67,7 @@ def get_user_contacts(username):
         return jsonify(message="Database connection problem"), 500
 
     if user != None:
-        return jsonify({"contacts":user['contacts']})
+        return jsonify({"contacts":user["contacts"]})
     else:
         return jsonify(message="User not found")
 
@@ -81,11 +81,28 @@ def create_contact(username):
     content = request.get_json()
     # push to contacts array
     try:
-        db.users.update({"name":username},{'$push':{'contacts': content}})
+        db.users.update({"name":username},{"$push":{"contacts": content}})
     except:
         return jsonify(message="Database connection problem"), 500
 
     return jsonify(message="Contact has been successfully added"), 201
+
+# update contact
+@app.route('/api/users/<username>/contacts/<index>', methods=['PUT'])
+def update_contact(username, index):
+    if (not session.get('logged_in') or
+        not username == session.get('username')):
+        abort(401)
+    # get post request content (new contact object)
+    content = request.get_json()
+    # update item <index> in contacts array
+    try:
+        db.users.update({"name":username},
+            {"$set":{"contacts." + index: content}})
+    except:
+        return jsonify(message="Database connection problem"), 500
+
+    return jsonify(message="Contact has been successfully updated"), 200
 
 # get tags by user
 @app.route('/api/users/<username>/tags', methods=['GET'])
@@ -122,12 +139,14 @@ def create_tag(username):
 # serve the Angular app
 # every route to be handled by Angular needs to be added here 
 # or else Flask will throw 404 if that route hits the server
-@app.route('/', defaults = {'contact': ''})
+@app.route('/')
 @app.route('/login')
 @app.route('/register')
 @app.route('/add')
-@app.route('/contact/<contact>')
-def contact(contact):
+@app.route('/contact/<arg>')
+@app.route('/contact/<arg>/update')
+# @app.route('/tags/<arg>')
+def contact(arg=''):
     return render_template('index.html')
 
 # connect to database 'test' and assign handle 'db'

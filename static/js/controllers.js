@@ -48,6 +48,7 @@ contactsControllers.controller('HomeCtrl', ['$scope', 'AuthService', '$location'
 			for (var i = 0, j = contacts.length; i < j; i++){
 				if(contacts[i]['firstName'] + '-' + contacts[i]['lastName'] == $stateParams.contact){
 					$scope.contact = contacts[i];
+					$scope.contact.index = i;
 					break;
 				}
 			};
@@ -61,7 +62,14 @@ contactsControllers.controller('HomeCtrl', ['$scope', 'AuthService', '$location'
 		// add contact
 		$scope.addContact = function(){
 			DataService.addContact($scope.newContact).success(function(){
-				$location.path('/');
+				$location.path('/contact/' + $scope.newContact.firstName + '-' + $scope.newContact.lastName);
+			});
+		}
+
+		// update current contact
+		$scope.updateContact = function(){
+			DataService.updateContact($scope.contact.index, $scope.contact).success(function(){
+				$location.path('/contact/' + $scope.contact.firstName + '-' + $scope.contact.lastName);
 			});
 		}
 

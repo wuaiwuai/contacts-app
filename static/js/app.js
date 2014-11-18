@@ -31,7 +31,7 @@ contactsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 				templateUrl: DIR + '/home.html',
 				controller: 'HomeCtrl'
 			})
-			.state('home.add',{
+			.state('home.add', {
 				url: 'add',
 				templateUrl: DIR + '/home.add.html',
 				controller: 'HomeCtrl'
@@ -40,7 +40,17 @@ contactsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 				url: 'contact/:contact',
 				templateUrl: DIR + '/home.contact.html',
 				controller: 'HomeCtrl'
-			});
+			})
+			.state('home.update', {
+				url: 'contact/:contact/update',
+				templateUrl: DIR + '/home.update.html',
+				controller: 'HomeCtrl'
+			});/*
+			.state('home.tag', {
+				url: 'tags/:tag',
+				templateUrl: DIR + '/home.contact.html',
+				controller: 'HomeCtrl'
+			});*/
 		// for now redirect all requests to login
 		$urlRouterProvider.otherwise('login')
 	}

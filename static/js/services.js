@@ -88,13 +88,19 @@ contactsServices.factory('DataService', ['$http', 'CacheService', '$q', 'AuthSer
 		// private properties/methods
 		var user = AuthService.getCurrentUser()
 		// updates cache to reflect newly added contact without calling db again for fresh data
-		var updateCachedContacts = function(newContact){
+		var addToCachedContacts = function(newContact){
 			var cachedContacts = CacheService.get('contacts');
 			cachedContacts.push(newContact);
 			CacheService.put('contacts', cachedContacts);
 		}
+		// updates cache to reflect newly updated contact without calling db again for fresh data
+		var updateCachedContacts = function(index, contact){
+			var cachedContacts = CacheService.get('contacts');
+			cachedContacts[index] = contact;
+			CacheService.put('contacts', cachedContacts);
+		}
 		// updates cache to reflect newly added tag without calling db again for fresh data
-		var updateCachedTags = function(newTag){
+		var addToCachedTags = function(newTag){
 			var cachedContacts = CacheService.get('tags');
 			cachedContacts.push(newTag);
 			CacheService.put('tags', cachedTags);
@@ -123,12 +129,23 @@ contactsServices.factory('DataService', ['$http', 'CacheService', '$q', 'AuthSer
 			addContact: function(newContact){
 				var contact = $http.post('/api/users/' + user + '/contacts', newContact);
 				contact.success(function(data){
-					updateCachedContacts(newContact);
+					addToCachedContacts(newContact);
 					FlashService.setMessage(data.message);
 				});
 				contact.error(function(data){
 					FlashService.showMessage(data.message);
-				})
+				});
+				return contact;
+			},
+			updateContact: function(index, updatedContact){
+				var contact = $http.put('/api/users/' + user + '/contacts/' + index, updatedContact);
+				contact.success(function(data){
+					updateCachedContacts(index, updatedContact);
+					FlashService.setMessage(data.message);
+				});
+				contact.error(function(data){
+					FlashService.showMessage(data.message);
+				});
 				return contact;
 			},
 			getTags: function(){
@@ -147,12 +164,12 @@ contactsServices.factory('DataService', ['$http', 'CacheService', '$q', 'AuthSer
 			addTag: function(newTag){
 				var tag = $http.post('/api/users/' + user + '/tags', newTag);
 				tag.success(function(data){
-					updateCachedTags(newTag);
+					addToCachedTags(newTag);
 					FlashService.setMessage(data.message);
 				});
 				contact.error(function(data){
 					FlashService.showMessage(data.message);
-				})
+				});
 				return tag;
 			}
 		};
