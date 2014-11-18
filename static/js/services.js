@@ -138,7 +138,7 @@ contactsServices.factory('DataService', ['$http', 'CacheService', '$q', 'AuthSer
 				else{
 					var tags = $http.get('/api/users/' + user + '/tags')
 						.then(function(response){
-							CacheService.put('contacts', response.data.tags);
+							CacheService.put('tags', response.data.tags);
 							return response.data.tags;
 						});
 					return tags;
