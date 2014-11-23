@@ -29,7 +29,15 @@ contactsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 			.state('home', {
 				url: '/',
 				templateUrl: DIR + '/home.html',
-				controller: 'HomeCtrl'
+				controller: 'HomeCtrl',
+				resolve: {
+					contactsObj: function(DataService){
+						var contacts = DataService.getContacts().then(function(data){
+							return data;
+						});
+						return contacts;
+					}
+				}
 			})
 			.state('home.add', {
 				url: 'add',

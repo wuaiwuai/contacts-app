@@ -1,6 +1,7 @@
 import os
 import sys
 import pymongo
+import bson
 from flask import Flask, request, session, g, redirect, url_for, \
     abort, render_template, flash, jsonify
 
@@ -79,30 +80,48 @@ def create_contact(username):
         abort(401)
     # get post request content (new contact object)
     content = request.get_json()
+    # assign unique (not guaranteed) object id and convert to string
+    content['id'] = str(bson.objectid.ObjectId())
     # push to contacts array
     try:
         db.users.update({"name":username},{"$push":{"contacts": content}})
     except:
         return jsonify(message="Database connection problem"), 500
 
-    return jsonify(message="Contact has been successfully added"), 201
+    return jsonify(message="Contact has been successfully added",
+        contact=content), 201
 
 # update contact
-@app.route('/api/users/<username>/contacts/<index>', methods=['PUT'])
-def update_contact(username, index):
+@app.route('/api/users/<username>/contacts/<id>', methods=['PUT'])
+def update_contact(username, id):
     if (not session.get('logged_in') or
         not username == session.get('username')):
         abort(401)
-    # get post request content (new contact object)
+    # get post request content (updated contact object)
     content = request.get_json()
-    # update item <index> in contacts array
+    # update item <id> in contacts array
     try:
-        db.users.update({"name":username},
-            {"$set":{"contacts." + index: content}})
+        db.users.update({"name":username, "contacts.id":id},
+            {"$set":{"contacts.$":content}})
     except:
         return jsonify(message="Database connection problem"), 500
 
-    return jsonify(message="Contact has been successfully updated"), 200
+    return jsonify(message="Contact has been successfully updated",
+        contact=content), 200
+
+# remove contact
+@app.route('/api/users/<username>/contacts/<id>', methods=['DELETE'])
+def delete_contact(username, id):
+    if (not session.get('logged_in') or
+        not username == session.get('username')):
+        abort(401)
+    # remove contact by id
+    try:
+        db.users.update({"name":username}, {"$pull":{"contacts":{"id":id}}})
+    except:
+        return jsonify(message="Database connection problem"), 500
+
+    return jsonify(message="Contact has been successfully deleted"), 200
 
 # get tags by user
 @app.route('/api/users/<username>/tags', methods=['GET'])
