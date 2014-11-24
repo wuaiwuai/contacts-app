@@ -70,7 +70,7 @@ def get_user_contacts(username):
     if user != None:
         return jsonify({"contacts":user["contacts"]})
     else:
-        return jsonify(message="User not found")
+        return jsonify(message="User not found"), 401
 
 # create new contact
 @app.route('/api/users/<username>/contacts', methods=['POST'])
@@ -107,7 +107,7 @@ def update_contact(username, id):
         return jsonify(message="Database connection problem"), 500
 
     return jsonify(message="Contact has been successfully updated",
-        contact=content), 200
+        contact=content)
 
 # remove contact
 @app.route('/api/users/<username>/contacts/<id>', methods=['DELETE'])
@@ -121,7 +121,7 @@ def delete_contact(username, id):
     except:
         return jsonify(message="Database connection problem"), 500
 
-    return jsonify(message="Contact has been successfully deleted"), 200
+    return jsonify(message="Contact has been successfully deleted")
 
 # get tags by user
 @app.route('/api/users/<username>/tags', methods=['GET'])
@@ -137,7 +137,7 @@ def get_user_tags(username):
     if user != None:
         return jsonify({"tags":user['tags']})
     else:
-        return jsonify(message="User not found")
+        return jsonify(message="User not found"), 401
 
 # create new tag
 @app.route('/api/users/<username>/tags', methods=['POST'])
@@ -153,7 +153,7 @@ def create_tag(username):
     except:
         return jsonify(message="Database connection problem"), 500
 
-    return jsonify(message="Contact has been successfully added"), 201
+    return jsonify(message="Tag has been successfully added"), 201
 
 # serve the Angular app
 # every route to be handled by Angular needs to be added here 
