@@ -13,6 +13,8 @@ app.config.from_object(__name__)
 # routes concerned with login/logout namespaced to '/auth'
 @app.route('/auth/login', methods=['POST'])
 def login():
+    '''Accept user info, check against database, log user
+    in if credentials are good, and send the user document.'''
     # expect json request content
     content = request.get_json()
     username = content['username']
@@ -35,12 +37,16 @@ def login():
 
 @app.route('/auth/logout', methods=['GET'])
 def logout():
+    '''Log the user out.'''
     session.pop('logged_in', None)
     return jsonify(message="You were logged out")
 
 # all xhr routes concerning data namespaced to '/api'
 @app.route('/api/users', methods=['POST'])
 def create_user():
+    '''Create a new user: add username/password to database, if the
+    username is already taken, return 422. If write is successful,
+    return 201.'''
     content = request.get_json()
     username = content['username']
     password = content['password']
@@ -59,6 +65,8 @@ def create_user():
 # get contacts by user
 @app.route('/api/users/<username>/contacts', methods=['GET'])
 def get_user_contacts(username):
+    '''Get contacts by user: if user is logged in, return contacts
+    array.'''
     if (not session.get('logged_in') or
         not username == session.get('username')):
         abort(401)
@@ -75,6 +83,8 @@ def get_user_contacts(username):
 # create new contact
 @app.route('/api/users/<username>/contacts', methods=['POST'])
 def create_contact(username):
+    '''Create new contact: if user is logged in, get contents of json
+    document and insert into contacts array.'''
     if (not session.get('logged_in') or
         not username == session.get('username')):
         abort(401)
@@ -94,6 +104,8 @@ def create_contact(username):
 # update contact
 @app.route('/api/users/<username>/contacts/<id>', methods=['PUT'])
 def update_contact(username, id):
+    '''Update contact: if user is logged in, get json document and
+    reset contact object by id.'''
     if (not session.get('logged_in') or
         not username == session.get('username')):
         abort(401)
@@ -112,6 +124,8 @@ def update_contact(username, id):
 # remove contact
 @app.route('/api/users/<username>/contacts/<id>', methods=['DELETE'])
 def delete_contact(username, id):
+    '''Remove contact: if user is logged in, remove contact object by
+    by id.'''
     if (not session.get('logged_in') or
         not username == session.get('username')):
         abort(401)
@@ -126,6 +140,7 @@ def delete_contact(username, id):
 # get tags by user
 @app.route('/api/users/<username>/tags', methods=['GET'])
 def get_user_tags(username):
+    '''Get tags by user: if user is logged in, return tags array.'''
     if (not session.get('logged_in') or
         not username == session.get('username')):
         abort(401)
@@ -142,6 +157,8 @@ def get_user_tags(username):
 # create new tag
 @app.route('/api/users/<username>/tags', methods=['POST'])
 def create_tag(username):
+    '''Create tag: if user is logged in, push post content to tags
+    array.'''
     if (not session.get('logged_in') or
         not username == session.get('username')):
         abort(401)
@@ -165,7 +182,8 @@ def create_tag(username):
 @app.route('/contact/<arg>')
 @app.route('/contact/<arg>/update')
 # @app.route('/tags/<arg>')
-def contact(arg=''):
+def serve_app(arg=''):
+    '''Serve app: render the index.html template and send.'''
     return render_template('index.html')
 
 # connect to database 'test' and assign handle 'db'
