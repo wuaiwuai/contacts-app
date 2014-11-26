@@ -18,9 +18,9 @@ gulp.task('lint', function() {
 // Compile Our Sass
 /*
 gulp.task('sass', function() {
-    return gulp.src('scss/*.scss')
+    return gulp.src('static/scss/*.scss')
         .pipe(sass())
-        .pipe(gulp.dest('css'));
+        .pipe(gulp.dest('static/css'));
 });
 */
 
@@ -36,8 +36,8 @@ gulp.task('scripts', function() {
 
 // Watch Files For Changes
 gulp.task('watch', function() {
-    gulp.watch('js/*.js', ['lint', 'scripts']);
-    //gulp.watch('scss/*.scss', ['sass']);
+    gulp.watch('static/js/*.js', ['lint', 'scripts']);
+    //gulp.watch('static/scss/*.scss', ['sass']);
 });
 
 // Default Task
