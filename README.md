@@ -48,7 +48,7 @@ To run
 - Run app on port 5000:
     `python app.py`
 - Install npm, node.js for build tools (bower, gulp)
-- Install dependencies in `package.json':
+- Install dependencies in `package.json`:
     `npm install`
 - Run gulp:
     `node node_modules/gulp/bin/gulp.js`
