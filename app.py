@@ -188,7 +188,7 @@ def serve_app(arg=''):
 
 # connect to database 'test' and assign handle 'db'
 connection = pymongo.MongoClient('localhost', 27017)
-db = connection.test
+db = connection.contacts-app
 
 if __name__ == '__main__':
     app.run(debug=True)

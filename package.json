@@ -1,5 +1,6 @@
 {
   "name": "contacts-app",
+  "private": true,
   "version": "1.0.0",
   "description": "Contacts-app ============",
   "main": "app.py",

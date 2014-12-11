@@ -51,7 +51,7 @@ To run
 - Install dependencies in `package.json`:
     `npm install`
 - Run gulp:
-    `node node_modules/gulp/bin/gulp.js`
+    `node_modules/.bin/gulp`
 
 Proposed Schema
 ---------------
