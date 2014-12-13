@@ -1,11 +1,19 @@
-'use strict';
 
 // define app dependencies
 var contactsApp = angular.module('contactsApp', [
-	'contactsControllers',
 	'ui.router',
-	'contactsServices'
+	'authModule',
+	'flashModule',
+	'homeModule',
+	'loginModule',
+	'registerModule'
 ]);
+
+var authModule = angular.module('authModule', []),
+	flashModule = angular.module('flashModule', []),
+	homeModule = angular.module('homeModule', []),
+	loginModule = angular.module('loginModule', []),
+	registerModule = angular.module('registerModule', []);
 
 // partial templates path relative to app.py
 var DIR = '/static/partials';
@@ -29,9 +37,17 @@ contactsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 			.state('home', {
 				url: '/',
 				templateUrl: DIR + '/home.html',
-				controller: 'HomeCtrl'
+				controller: 'HomeCtrl',
+				resolve: {
+					contactsObj: function(DataService){
+						var contacts = DataService.getContacts().then(function(data){
+							return data;
+						});
+						return contacts;
+					}
+				}
 			})
-			.state('home.add',{
+			.state('home.add', {
 				url: 'add',
 				templateUrl: DIR + '/home.add.html',
 				controller: 'HomeCtrl'
@@ -40,9 +56,19 @@ contactsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 				url: 'contact/:contact',
 				templateUrl: DIR + '/home.contact.html',
 				controller: 'HomeCtrl'
-			});
+			})
+			.state('home.update', {
+				url: 'contact/:contact/update',
+				templateUrl: DIR + '/home.update.html',
+				controller: 'HomeCtrl'
+			});/*
+			.state('home.tag', {
+				url: 'tags/:tag',
+				templateUrl: DIR + '/home.contact.html',
+				controller: 'HomeCtrl'
+			});*/
 		// for now redirect all requests to login
-		$urlRouterProvider.otherwise('login')
+		$urlRouterProvider.otherwise('login');
 	}
 ]);
 
@@ -69,6 +95,6 @@ contactsApp.run(['$rootScope', 'AuthService', '$location', 'FlashService', '$sta
 			if(UNPROTECTED_ROUTES.indexOf($location.path()) < 0 && !AuthService.getCurrentUser()){
 				$location.path('/login');
 			}
-		})
+		});
 	}
 ]);

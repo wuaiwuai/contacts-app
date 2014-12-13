@@ -1,0 +1,51 @@
+<div>
+	<form ng-submit="updateContact()">
+		<div class="row">
+			<label class="col-lg-2 control-label">First name:</label>
+			<div class="col-lg-3">
+				<input ng-model="contact.firstName" type="text" class="form-control" placeholder="">
+			</div>
+			<label class="col-lg-2 control-label">Last name:</label>
+			<div class="col-lg-3">
+				<input ng-model="contact.lastName" type="text" class="form-control" placeholder="">
+			</div>
+		</div>
+		<div class="row">
+			<label class="col-lg-2 control-label">Company:</label>
+			<div class="col-lg-3">
+				<input ng-model="contact.company" type="text" class="form-control" placeholder="">
+			</div>
+			<label class="col-lg-2 control-label">Phone:</label>
+			<div class="col-lg-3">
+				<input ng-model="contact.phone" type="text" class="form-control" placeholder="">
+			</div>
+		</div>
+		<div class="row">
+			<label class="col-lg-2 control-label">Address:</label>
+			<div class="col-lg-3">
+				<input ng-model="contact.address" type="text" class="form-control" placeholder="">
+			</div>
+			<label class="col-lg-2 control-label">Birthday:</label>
+			<div class="col-lg-3">
+				<input ng-model="contact.birthday" type="text" class="form-control" placeholder="">
+			</div>
+		</div>
+		<div class="row">
+			<label ng-model="contact.email" class="col-lg-2 control-label">Email:</label>
+			<div class="col-lg-3">
+				<input type="text" class="form-control" placeholder="">
+			</div>
+			<label class="col-lg-2 control-label">Notes:</label>
+			<div class="col-lg-3">
+				<input ng-model="contact.notes" type="text" class="form-control" placeholder="">
+			</div>
+		</div>
+		<hr />
+		<div class="row">
+			<div class="col-lg-3 col-lg-offset-7">
+				<button class="btn btn-primary" type="submit">Save changes</button>
+				<a href="/contact/{{contact.firstName}}-{{contact.lastName}}" class="btn btn-danger">Cancel</a>
+			</div>
+		</div>
+	</form>
+</div>
