@@ -10,7 +10,7 @@ var rename = require('gulp-rename');
 
 // Lint Task
 gulp.task('lint', function() {
-    return gulp.src('js/*.js')
+    return gulp.src('static/app/**/*.js')
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
 });
@@ -26,19 +26,25 @@ gulp.task('sass', function() {
 
 // Concatenate & Minify JS
 gulp.task('scripts', function() {
-    return gulp.src('static/js/*.js')
+    return gulp.src('static/app/**/*.js')
         .pipe(concat('all.js'))
         .pipe(gulp.dest('static/dist'))
         .pipe(rename('all.min.js'))
-        .pipe(uglify())
+        .pipe(uglify()).on('error', errorHandler)
         .pipe(gulp.dest('static/dist'));
 });
 
 // Watch Files For Changes
 gulp.task('watch', function() {
-    gulp.watch('static/js/*.js', ['lint', 'scripts']);
+    gulp.watch('static/app/**/*.js', ['lint', 'scripts']);
     //gulp.watch('static/scss/*.scss', ['sass']);
 });
 
 // Default Task
 gulp.task('default', ['lint', /*'sass',*/ 'scripts', 'watch']);
+
+// Handle the error
+function errorHandler (error) {
+ 	console.log(error.toString());
+ 	this.emit('end');
+}

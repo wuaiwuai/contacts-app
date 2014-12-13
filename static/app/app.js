@@ -1,11 +1,19 @@
-'use strict';
 
 // define app dependencies
 var contactsApp = angular.module('contactsApp', [
-	'contactsControllers',
 	'ui.router',
-	'contactsServices'
+	'authModule',
+	'flashModule',
+	'homeModule',
+	'loginModule',
+	'registerModule'
 ]);
+
+var authModule = angular.module('authModule', []),
+	flashModule = angular.module('flashModule', []),
+	homeModule = angular.module('homeModule', []),
+	loginModule = angular.module('loginModule', []),
+	registerModule = angular.module('registerModule', []);
 
 // partial templates path relative to app.py
 var DIR = '/static/partials';
@@ -60,7 +68,7 @@ contactsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 				controller: 'HomeCtrl'
 			});*/
 		// for now redirect all requests to login
-		$urlRouterProvider.otherwise('login')
+		$urlRouterProvider.otherwise('login');
 	}
 ]);
 
@@ -87,6 +95,6 @@ contactsApp.run(['$rootScope', 'AuthService', '$location', 'FlashService', '$sta
 			if(UNPROTECTED_ROUTES.indexOf($location.path()) < 0 && !AuthService.getCurrentUser()){
 				$location.path('/login');
 			}
-		})
+		});
 	}
 ]);

@@ -1,11 +1,19 @@
-'use strict';
 
 // define app dependencies
 var contactsApp = angular.module('contactsApp', [
-	'contactsControllers',
 	'ui.router',
-	'contactsServices'
+	'authModule',
+	'flashModule',
+	'homeModule',
+	'loginModule',
+	'registerModule'
 ]);
+
+var authModule = angular.module('authModule', []),
+	flashModule = angular.module('flashModule', []),
+	homeModule = angular.module('homeModule', []),
+	loginModule = angular.module('loginModule', []),
+	registerModule = angular.module('registerModule', []);
 
 // partial templates path relative to app.py
 var DIR = '/static/partials';
@@ -60,7 +68,7 @@ contactsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 				controller: 'HomeCtrl'
 			});*/
 		// for now redirect all requests to login
-		$urlRouterProvider.otherwise('login')
+		$urlRouterProvider.otherwise('login');
 	}
 ]);
 
@@ -87,108 +95,72 @@ contactsApp.run(['$rootScope', 'AuthService', '$location', 'FlashService', '$sta
 			if(UNPROTECTED_ROUTES.indexOf($location.path()) < 0 && !AuthService.getCurrentUser()){
 				$location.path('/login');
 			}
-		})
+		});
 	}
 ]);
-'use strict';
+// AuthService handles login/logout by calling SessionService
+authModule.factory('AuthService', ['SessionService', '$http', 'FlashService', 'CacheService',
+	function(SessionService, $http, FlashService, CacheService){
 
-var contactsControllers = angular.module('contactsControllers', []);
-
-contactsControllers.controller('LoginCtrl', ['$scope', 'AuthService', '$location',
-	function($scope, AuthService, $location){
-
-		// initialize credentials object
-		$scope.credentials = {};
-
-		// on form submit call AuthService's login function with user's credentials
-		// on success, redirect to home page
-		$scope.login = function(){
-			AuthService.login($scope.credentials).success(function(){
-				$location.path('/');
-			})
-		}
-	}
-]);
-
-contactsControllers.controller('RegisterCtrl', ['$scope', 'RegisterService', '$location',
-	function($scope, RegisterService, $location){
-
-		// initialize credentials object
-		$scope.credentials = {};
-
-		$scope.register = function(){
-			RegisterService.registerUser($scope.credentials).success(function(){
-				$location.path('/login');
-			});
-		}
-	}
-]);
-
-contactsControllers.controller('HomeCtrl', ['$scope', 'AuthService', '$location', 'DataService', '$stateParams', 'contactsObj',
-	function($scope, AuthService, $location, DataService, $stateParams, contactsObj){
-
-		// initialize new contact object
-		$scope.newContact = {};
-
-		// get current user from localStorage
-		$scope.user = AuthService.getCurrentUser();
-
-		// get contacts
-		$scope.contacts = contactsObj;
-
-		// set current contact from url
-		for (var i = 0, j = $scope.contacts.length; i < j; i++){
-			// set index param of all contacts
-			//$scope.contacts[i].index = i; // to remove, replace index with id
-			if($scope.contacts[i]['firstName'] + '-' + $scope.contacts[i]['lastName'] == $stateParams.contact){
-				$scope.contact = $scope.contacts[i];
-				break;
-			}
+		// private methods; set and unset sessions
+		var cacheSession = function(user){
+			SessionService.set('user', user);
 		};
 
-		// get tags
-		DataService.getTags().then(function(tags){
-			$scope.tags = tags;
-		});
+		var uncacheSession = function(){
+			SessionService.unset('user');
+		};
 
-		// add contact
-		$scope.addContact = function(){
-			// set index param of new contact
-			//$scope.newContact.index = $scope.contacts.length;
-			DataService.addContact($scope.newContact).success(function(){
-				$location.path('/contact/' + $scope.newContact.firstName + '-' + $scope.newContact.lastName);
-			});
-		}
-
-		// update current contact
-		$scope.updateContact = function(){
-			DataService.updateContact($scope.contact.id, $scope.contact).success(function(){
-				$location.path('/contact/' + $scope.contact.firstName + '-' + $scope.contact.lastName);
-			});
-		}
-
-		// delete current contact
-		$scope.deleteContact = function(){
-			DataService.deleteContact($scope.contact.id).success(function(){
-				$location.path('/');
-			});
-		}
-
-		// on form submit, call AuthService's logout function
-		// on success redirect to login page
-		$scope.logout = function(){
-			AuthService.logout().success(function(){
-				$location.path('/login');
-			});
-		}
+		// public methods 
+		// use xhr to authenticate against db and store
+		// server side sessions, and return promises that 
+		// can be used in controllers for redirects, etc
+		// login stores contacts data with CacheService
+		return {
+			login: function(credentials){
+				var login = $http.post('/auth/login', credentials);
+				login.success(function(data){
+					cacheSession(data.user);
+					CacheService.put('contacts', data.contacts);
+					CacheService.put('tags', data.tags);
+				});
+				login.error(function(data){
+					FlashService.showMessage(data.message);
+				});
+				return login;
+			},
+			logout: function(){
+				var logout = $http.get('/auth/logout');
+				logout.success(function(data){
+					uncacheSession();
+					FlashService.setMessage(data.message);
+				});
+				return logout;
+			},
+			getCurrentUser: function(){
+				return SessionService.get('user');
+			}
+		};
 	}
 ]);
-'use strict';
-
-var contactsServices = angular.module('contactsServices', []);
-
+// SessionService stores sessions in localStorage
+authModule.factory('SessionService', [
+	function(){
+		return {
+			get: function(key){
+				return localStorage.getItem(key);
+			},
+			set: function(key, value){
+				return localStorage.setItem(key, value);
+			},
+			unset: function(key){
+				return localStorage.removeItem(key);
+			}
+		};
+	}
+]);
 // FlashService emulates server side flash messaging
-contactsServices.factory('FlashService', ['$rootScope',
+flashModule.factory('FlashService', ['$rootScope',
 	function($rootScope){
 
 		// set message queue and current message; when route
@@ -219,65 +191,24 @@ contactsServices.factory('FlashService', ['$rootScope',
 		};
 	}
 ]);
-
-// AuthService handles login/logout by calling SessionService
-contactsServices.factory('AuthService', ['SessionService', '$http', 'FlashService', 'CacheService',
-	function(SessionService, $http, FlashService, CacheService){
-
-		// private methods; set and unset sessions
-		var cacheSession = function(user){
-			SessionService.set('user', user);
-		}
-
-		var uncacheSession = function(){
-			SessionService.unset('user');
-		}
-
-		// public methods 
-		// use xhr to authenticate against db and store
-		// server side sessions, and return promises that 
-		// can be used in controllers for redirects, etc
-		// login stores contacts data with CacheService
-		return {
-			login: function(credentials){
-				var login = $http.post('/auth/login', credentials);
-				login.success(function(data){
-					cacheSession(data.user);
-					CacheService.put('contacts', data.contacts);
-					CacheService.put('tags', data.tags);
-				});
-				login.error(function(data){
-					FlashService.showMessage(data.message);
-				})
-				return login;
-			},
-			logout: function(){
-				var logout = $http.get('/auth/logout');
-				logout.success(function(data){
-					uncacheSession();
-					FlashService.setMessage(data.message);
-				});
-				return logout;
-			},
-			getCurrentUser: function(){
-				return SessionService.get('user');
-			}
-		};
+// CacheService is the custom cache where contacts will be stored
+homeModule.factory('CacheService', ['$cacheFactory',
+	function($cacheFactory){
+		return $cacheFactory('customData');
 	}
 ]);
-
 // DataService provides methods for CRUD operations
-contactsServices.factory('DataService', ['$http', 'CacheService', '$q', 'AuthService', 'FlashService',
+homeModule.factory('DataService', ['$http', 'CacheService', '$q', 'AuthService', 'FlashService',
 	function($http, CacheService, $q, AuthService, FlashService){
 
 		// private properties/methods
-		var user = AuthService.getCurrentUser()
+		var user = AuthService.getCurrentUser();
 		// updates cache to reflect newly added contact without calling db again for fresh data
 		var addToCachedContacts = function(newContact){
 			var cachedContacts = CacheService.get('contacts');
 			cachedContacts.push(newContact);
 			CacheService.put('contacts', cachedContacts);
-		}
+		};
 		// updates cache to reflect newly updated contact without calling db again for fresh data
 		var updateCachedContacts = function(id, contact){
 			var cachedContacts = CacheService.get('contacts');
@@ -287,7 +218,7 @@ contactsServices.factory('DataService', ['$http', 'CacheService', '$q', 'AuthSer
 				}
 			}
 			CacheService.put('contacts', cachedContacts);
-		}
+		};
 		// updates cache to reflect newly removed contact
 		var removeFromCachedContacts = function(id){
 			var cachedContacts = CacheService.get('contacts');
@@ -297,13 +228,13 @@ contactsServices.factory('DataService', ['$http', 'CacheService', '$q', 'AuthSer
 				}
 			}
 			CacheService.put('contacts', cachedContacts);
-		}
+		};
 		// updates cache to reflect newly added tag without calling db again for fresh data
 		var addToCachedTags = function(newTag){
 			var cachedContacts = CacheService.get('tags');
 			cachedContacts.push(newTag);
 			CacheService.put('tags', cachedTags);
-		}
+		};
 		
 		// public methods
 		// getContacts will first check cache to see if there is
@@ -385,16 +316,97 @@ contactsServices.factory('DataService', ['$http', 'CacheService', '$q', 'AuthSer
 		};
 	}
 ]);
+// Controller for homepage
+homeModule.controller('HomeCtrl', ['$scope', 'AuthService', '$location', 'DataService', '$stateParams', 'contactsObj',
+	function($scope, AuthService, $location, DataService, $stateParams, contactsObj){
 
-// CacheService is the custom cache where contacts will be stored
-contactsServices.factory('CacheService', ['$cacheFactory',
-	function($cacheFactory){
-		return $cacheFactory('customData');
+		// initialize new contact object
+		$scope.newContact = {};
+
+		// get current user from localStorage
+		$scope.user = AuthService.getCurrentUser();
+
+		// get contacts
+		$scope.contacts = contactsObj;
+
+		// set current contact from url
+		for (var i = 0, j = $scope.contacts.length; i < j; i++){
+			// set index param of all contacts
+			//$scope.contacts[i].index = i; // to remove, replace index with id
+			if($scope.contacts[i].firstName + '-' + $scope.contacts[i].lastName == $stateParams.contact){
+				$scope.contact = $scope.contacts[i];
+				break;
+			}
+		}
+
+		// get tags
+		DataService.getTags().then(function(tags){
+			$scope.tags = tags;
+		});
+
+		// add contact
+		$scope.addContact = function(){
+			// set index param of new contact
+			//$scope.newContact.index = $scope.contacts.length;
+			DataService.addContact($scope.newContact).success(function(){
+				$location.path('/contact/' + $scope.newContact.firstName + '-' + $scope.newContact.lastName);
+			});
+		};
+
+		// update current contact
+		$scope.updateContact = function(){
+			DataService.updateContact($scope.contact.id, $scope.contact).success(function(){
+				$location.path('/contact/' + $scope.contact.firstName + '-' + $scope.contact.lastName);
+			});
+		};
+
+		// delete current contact
+		$scope.deleteContact = function(){
+			DataService.deleteContact($scope.contact.id).success(function(){
+				$location.path('/');
+			});
+		};
+
+		// on form submit, call AuthService's logout function
+		// on success redirect to login page
+		$scope.logout = function(){
+			AuthService.logout().success(function(){
+				$location.path('/login');
+			});
+		};
 	}
 ]);
+loginModule.controller('LoginCtrl', ['$scope', 'AuthService', '$location',
+	function($scope, AuthService, $location){
 
+		// initialize credentials object
+		$scope.credentials = {};
+
+		// on form submit call AuthService's login function with user's credentials
+		// on success, redirect to home page
+		$scope.login = function(){
+			AuthService.login($scope.credentials).success(function(){
+				$location.path('/');
+			});
+		};
+	}
+]);
+// Controller for registration page
+registerModule.controller('RegisterCtrl', ['$scope', 'RegisterService', '$location',
+	function($scope, RegisterService, $location){
+
+		// initialize credentials object
+		$scope.credentials = {};
+
+		$scope.register = function(){
+			RegisterService.registerUser($scope.credentials).success(function(){
+				$location.path('/login');
+			});
+		};
+	}
+]);
 // RegisterService posts to create user
-contactsServices.factory('RegisterService', ['$http', 'FlashService',
+registerModule.factory('RegisterService', ['$http', 'FlashService',
 	function($http, FlashService){
 		return {
 			registerUser: function(credentials){
@@ -406,23 +418,6 @@ contactsServices.factory('RegisterService', ['$http', 'FlashService',
 					FlashService.showMessage(data.message);
 				});
 				return register;
-			}
-		};
-	}
-]);
-
-// SessionService stores sessions in localStorage
-contactsServices.factory('SessionService', [
-	function(){
-		return {
-			get: function(key){
-				return localStorage.getItem(key);
-			},
-			set: function(key, value){
-				return localStorage.setItem(key, value);
-			},
-			unset: function(key){
-				return localStorage.removeItem(key);
 			}
 		};
 	}
